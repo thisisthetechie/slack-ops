@@ -1,0 +1,17 @@
+trigger: none
+
+schedules:
+- cron: 0 30 * * *
+  displayName: Daily
+  branches:
+    include:
+      - main
+  always: true
+
+steps:
+  - template: ../scheduled_tasks.yml
+    parameters:
+      tasks:
+        # Collection of processes to run in this order
+        - name: Add Scheduled KeyVault Policies
+          script: scheduled-kv-policy.ps1

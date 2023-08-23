@@ -1,0 +1,43 @@
+parameters:
+  - name: tasks
+    type: object
+
+stages:
+  - stage: run_task
+    displayName: Run Scheduled Task
+    variables:
+      - group: Default
+      - group: Secrets
+      - group: subscriptions
+      - group: locations
+      - name: operation
+        value: 'Scheduled Task'
+    jobs:
+      - job: scheduled_task
+        displayName: Run Scheduled Task
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+
+          # Perform Tasks 
+          - ${{ each task in parameters.tasks }}:
+            - task: AzurePowerShell@5
+              displayName: ${{ task.name }}
+              inputs:
+                azureSubscription: $(service_connection)
+                ScriptType: 'FilePath'
+                ScriptPath: $(System.DefaultWorkingDirectory)/scheduled-tasks/scripts/${{ task.script }}
+                ScriptArguments: ${{ task.arguments }}
+                azurePowerShellVersion: LatestVersion
+                addSpnToEnvironment: true
+
+          # Notify Failed task
+          - task: PowerShell@2
+            displayName: 'Notify ops of failure'
+            condition: failed()
+            inputs:
+              targetType: filePath
+              filePath: '$(System.DefaultWorkingDirectory)/pipeline-scripts/notify-failed.ps1'
+              arguments: -target ops -operation "$(operation)" -slack_bot_token $(slack-bot-token)
+              addSpnToEnvironment: true
+            continueOnError: true

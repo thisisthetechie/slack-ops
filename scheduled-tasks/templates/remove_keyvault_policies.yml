@@ -1,0 +1,17 @@
+trigger: none
+
+schedules:
+- cron: 0 0 * * *
+  displayName: Daily
+  branches:
+    include:
+      - main
+  always: true
+
+steps:
+  - template: ../scheduled_tasks.yml
+    parameters:
+      tasks:
+        # Collection of processes to run in this order
+        - name: Remove KeyVault Policies
+          script: remove-kv-policy.ps1

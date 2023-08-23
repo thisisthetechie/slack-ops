@@ -1,0 +1,37 @@
+trigger:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - application/src
+  batch: True
+
+name: $(Date:yyyyMMdd)-$(Build.SourceBranchName)
+
+jobs:
+  - job: build_push_container
+    displayName: Build and Push Container
+    pool:
+      vmImage: ubuntu-latest
+    variables:
+      - group: Default
+      - group: Infrastructure
+      - group: UKSouth
+      - group: Development
+
+    steps:
+    - task: Docker@2
+      displayName: Build and Push Container
+      inputs:
+        containerRegistry: $(container_registrys)
+        repository: $(app_service_name)
+        command: 'buildAndPush'
+        Dockerfile: '**/dockerfile'
+        ${{ if eq(variables['Build.SourceBranchName'], 'main') }}:
+          tags: |
+            $(Build.BuildNumber)
+            latest
+        ${{ else }}:
+          tags: |
+            $(Build.BuildNumber)

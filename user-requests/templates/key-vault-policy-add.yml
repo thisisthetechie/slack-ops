@@ -1,0 +1,9 @@
+trigger: none
+
+steps:
+  - template: ../perform_request.yml
+    parameters:
+      tasks:
+        # Collection of processes to run in this order
+        - name: Add KeyVault Policy
+          script: key-vault-policy-add.ps1

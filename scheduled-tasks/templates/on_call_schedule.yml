@@ -1,0 +1,21 @@
+trigger: none
+
+schedules:
+- cron: 5 0 * * 1
+  displayName: Weekly
+  branches:
+    include:
+      - main
+  always: true
+
+variables:
+  - group: Secrets
+
+stages:
+  - template: ../scheduled_tasks.yml
+    parameters:
+      tasks:
+        # Collection of processes to run in this order
+        - name: Display On Call Schedule
+          arguments: -slack_bot_token $(slack-bot-token) -opsgenie_subscription_id $(opsgenie-subscription-id) -opsgenie_api_key $(opsgenie-api-key)
+          script: on-call.ps1

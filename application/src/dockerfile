@@ -1,0 +1,14 @@
+FROM python:3.11.4-alpine3.18
+
+ENV SLACK_BOT_TOKEN=""
+ENV SLACK_SIGNING_SECRET=""
+
+WORKDIR /app
+
+COPY . .
+
+RUN pip install -r requirements.txt
+
+EXPOSE 3000
+
+CMD ["python", "slackops.py"]

@@ -1,0 +1,181 @@
+parameters:
+  - name: tasks
+    type: object
+
+stages:
+  - stage: perform_request
+    displayName: Perform Request
+    variables:
+      - group: Default
+      - group: Secrets
+      - group: subscriptions
+      - group: locations
+      - name: operation
+        value: 'User Request'
+    jobs:
+      - job: initial_communications
+        displayName: Initial Communications
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+
+          # Notify User of Receipt of Request
+          - task: PowerShell@2
+            name: notify_receipt
+            displayName: Notify User of Receipt
+            inputs:
+              targetType: filePath
+              filePath: '$(System.DefaultWorkingDirectory)/pipeline-scripts/notify-receipt.ps1'
+              arguments: '-slack_bot_token $(slack-bot-token)'
+              addSpnToEnvironment: true
+            env:
+              SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
+          # If no approval is required, automatically set flag to true
+          - task: PowerShell@2
+            name: auto_approval
+            displayName: Auto Approval
+            inputs:
+              targetType: filePath
+              filePath: '$(System.DefaultWorkingDirectory)/pipeline-scripts/auto-approve.ps1'
+              addSpnToEnvironment: true
+            condition: and(succeeded(), eq(variables.approval_needed, false))
+
+          # If approval is required, send message to Ops/Infra
+          - task: PowerShell@2
+            name: request_approval
+            displayName: Request Approval
+            inputs:
+              targetType: filePath
+              filePath: '$(System.DefaultWorkingDirectory)/pipeline-scripts/request-ops-approval.ps1'
+              arguments: '-slack_bot_token $(slack-bot-token)'
+              addSpnToEnvironment: true
+            condition: and(succeeded(), eq(variables.approval_needed, true))
+
+
+      - job: approval
+        displayName: Wait for Approval
+        pool: server
+        dependsOn: initial_communications
+        condition: and(succeeded(), eq(variables.approval_needed, true))
+        steps:
+
+          # Wait for approval
+          - task: ManualValidation@0
+            displayName: Wait for Approval
+            inputs:
+              instructions: The approval process is via Slack only, please don't do anything here
+
+      - job: process_request
+        displayName: Process Request
+        pool:
+          vmImage: ubuntu-latest
+        dependsOn:
+          - approval
+          - initial_communications
+        condition: in(dependencies.approval.result, 'Succeeded', 'Skipped')
+        variables:
+          - name: user_dm
+            value: $[ dependencies.initial_communications.outputs['notify_receipt.user_dm'] ] 
+          - name: user_thread
+            value: $[ dependencies.initial_communications.outputs['notify_receipt.user_thread'] ]
+
+        steps:
+
+          # Approval given, notify the user 
+          - task: PowerShell@2
+            name: notify_approval
+            displayName: Notify Approval
+            inputs:
+              targetType: filePath
+              filePath: '$(System.DefaultWorkingDirectory)/pipeline-scripts/notify-approval.ps1'
+              arguments: -approved true -slack_bot_token $(slack-bot-token)
+              addSpnToEnvironment: true
+
+          # Notify user that the request is being processed
+          - task: PowerShell@2
+            displayName: 'Notify Processing'
+            inputs:
+              targetType: filePath
+              filePath: '$(System.DefaultWorkingDirectory)/pipeline-scripts/send-user-notification-icon.ps1'
+              arguments: '-icon $(icon_processing) -slack_bot_token $(slack-bot-token)'
+              addSpnToEnvironment: true
+
+          # Perform request tasks
+          - ${{ each task in parameters.tasks }}:
+            - task: AzurePowerShell@5
+              name: ${{ lower(replace(task.name, ' ', '_')) }}
+              displayName: ${{ task.name }}
+              inputs:
+                azureSubscription: $(service_connection)
+                ScriptPath: $(System.DefaultWorkingDirectory)/user-requests/scripts/${{ task.script }}
+                ScriptArguments: -output "$(output)" ${{ task.arguments}}
+                azurePowerShellVersion: LatestVersion
+                addSpnToEnvironment: true
+                pwsh: true
+          
+          # Notify user that the request has completed
+          - task: PowerShell@2
+            displayName: 'Notify Complete'
+            inputs:
+              targetType: filePath
+              filePath: '$(System.DefaultWorkingDirectory)/pipeline-scripts/notify-complete.ps1'
+              arguments: '-output "$(output)" -slack_bot_token $(slack-bot-token)'
+
+      - job: process_failure
+        displayName: Process Rejection/Failure
+        pool:
+          vmImage: ubuntu-latest
+        dependsOn:
+          - initial_communications
+          - process_request
+        condition: failed()
+        variables:
+          - name: targets
+            value: 'Ops,User'
+          - name: user_dm
+            value: $[ dependencies.initial_communications.outputs['notify_receipt.user_dm'] ] 
+          - name: user_thread
+            value: $[ dependencies.initial_communications.outputs['notify_receipt.user_thread'] ]
+          - name: ops_dm
+            value: $[ dependencies.initial_communications.outputs['request_approval.ops_dm'] ] 
+          - name: ops_thread
+            value: $[ dependencies.initial_communications.outputs['request_approval.ops_thread'] ]
+
+        steps:
+
+          # Identify if the "failure" reason is for Rejected Request
+          - task: PowerShell@2
+            displayName: 'Identify Rejected Request'
+            name: is_rejected_request
+            inputs:
+              targetType: filePath
+              filePath: '$(System.DefaultWorkingDirectory)/pipeline-scripts/is-rejected-request.ps1'
+              addSpnToEnvironment: true
+            continueOnError: true
+            env:
+              SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
+          # Notify on Rejected request
+          - task: PowerShell@2
+            name: notify_rejection
+            displayName: Notify Rejection
+            condition: eq(variables.approved, 'Rejected')
+            inputs:
+              targetType: filePath
+              filePath: '$(System.DefaultWorkingDirectory)/pipeline-scripts/notify-approval.ps1'
+              arguments: -approved $(approved) -comments "_$(comments)_" -slack_bot_token $(slack-bot-token)
+              addSpnToEnvironment: true
+
+          # Notify Failed request
+          - ${{ each target in split(variables.targets, ',') }}:
+            - task: PowerShell@2
+              displayName: 'Notify ${{ target }} of failure'
+              condition: eq(variables.approved, 'Failed')
+              inputs:
+                targetType: filePath
+                filePath: '$(System.DefaultWorkingDirectory)/pipeline-scripts/notify-failed.ps1'
+                arguments: '-target ${{ lower(target) }} -operation "$(operation)" -slack_bot_token $(slack-bot-token)'
+                addSpnToEnvironment: true
+              continueOnError: true
+       
