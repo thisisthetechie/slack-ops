@@ -21,7 +21,7 @@ BLK_PROJECT_NAME = InputBlock(
     element = PlainTextInputElement(action_id="project_name", placeholder="my-project")
 )
 
-BLK_PROJECT_SHORT_NAME = Block(
+BLK_PROJECT_SHORT_NAME = InputBlock(
     block_id = "project_short_name",
     label = TextObject(type="plain_text", text="Project Short Name"),
     element = PlainTextInputElement(action_id="project_short_name", placeholder="acmelookup", max_length=14)
@@ -107,76 +107,74 @@ BLK_SUBSCRIPTION = [
     ),
     ActionsBlock(
         block_id = "subscription",
-        elements = dict(
-            SelectElement(
+        elements = [
+            StaticSelectElement(
                 action_id = "subscription",
                 options = [
-                Option(label = "Development", value = "development"),
-                Option(lable = "Integration", value = "integration"),
-                Option(lable = "Staging",     value = "staging"),
-                Option(lable = "Production",  value = "production")
+                    Option(text = "Development", value = "development"),
+                    Option(text = "Integration", value = "integration"),
+                    Option(text = "Staging",     value = "staging"),
+                    Option(text = "Production",  value = "production")
                 ],
                 placeholder = "Select a Subscription"
             )
-        )
+        ]
     ),
     ContextBlock(
-        elements = dict(
+        elements = [
             TextObject(
                 type = "mrkdwn",
                 text = "_Note: Additional fields will be enabled depending on selection_"
             )
-        )
+        ]
     )
 ]
+
 
 ###################################################################
 ### Additional blocks to add if Production Environment is selected
 ###################################################################
 BLK_PRODUCTION = [
-    InputBlock(
-        block_id="change_request",
-        label=TextObject(type="plain_text", text="Change or Jira Number"),
-        element=(PlainTextInputElement(action_id="change_request", placeholder="CHG0123456"))
+    dict(
+        type = "input",
+        block_id = "change_request",
+        label = dict(type="plain_text", text="Change or Jira Number"),
+        element = dict(type="plain_text_input", action_id="change_request", placeholder=dict(type="plain_text", text="CHG0123456"))
     ),
-    InputBlock(
-        block_id="request_reason",
-        label=TextObject(type="plain_text", text="Reason for the request"),
-        element=(PlainTextInputElement(action_id="change_request"))
+    dict(
+        type = "input",
+        block_id = "request_reason",
+        label = dict(type="plain_text", text="Reason for the request"),
+        element = dict(type="plain_text_input", action_id="request_reason")
     )
 ]
 
 ###################################################################
 ### Service Connection Action Block (will force update with new fields)
 ###################################################################
-BLK_SERVICE_CONNECTION = [
-    ActionsBlock(
-        block_id = "create_service_connection",
-        elements = dict(
-            CheckboxesElement(
-               action_id = "create_service_connection",
-               options = [
-                  Option(
-                     label = "Create Service Connection",
-                     value = "create_service_connection"
-                  )
-               ]
-            )
+BLK_SERVICE_CONNECTION = ActionsBlock(
+    block_id = "create_service_connection",
+    elements = [
+        CheckboxesElement(
+            action_id = "create_service_connection",
+            options = [
+                Option(text="Create Service Connection",value = "create_service_connection")
+            ]
         )
-    )
-]
+    ]
+)
 
 ###################################################################
 ### Additional blocks to add if Service Connection is required
 ###################################################################
 BLK_AZURE_PROJECT_NAME = [
-   InputBlock(
-        block_id="azure_project_name",
-        label=TextObject(type="plain_text", text="Azure DevOps Project Name"),
-        element=(PlainTextInputElement(action_id="azure_project_name", placeholder="acme-lookup"))
+    dict(
+        type = "input",
+        block_id = "azure_project_name",
+        label = dict(type="plain_text", text="Azure DevOps Project Name"),
+        element = dict(type="plain_text_input", action_id="azure_project_name", placeholder=dict(type="plain_text", text="acme-lookup"))
     )
 ]
-
 ###################################################################
 ### Create Requests Object
 ###################################################################
@@ -227,8 +225,7 @@ OPS_REQUESTS = dict(
         command = "resource group",
         approval_needed = "false",
         enabled = "true",
-        blocks = [
-            BLK_SUBSCRIPTION,
+        blocks = BLK_SUBSCRIPTION + [
             BLK_PROJECT_NAME,
             BLK_PROJECT_SHORT_NAME,
             BLK_LOCATIONS,
@@ -240,7 +237,7 @@ OPS_REQUESTS = dict(
     ),
         
     # Request permissions for Service Connection
-    req_resource_group = dict(
+    req_connection_perms = dict(
         group = "Permission",
         title_popup = "Service Connection Perms",
         title_home = ":perms: Request Permissions for a Service Connection",
@@ -248,8 +245,7 @@ OPS_REQUESTS = dict(
         command = "service permissions",
         approval_needed = "false",
         enabled = "true",
-        blocks = [
-            BLK_SUBSCRIPTION,
+        blocks = BLK_SUBSCRIPTION + [
             BLK_PROJECT_NAME,
             BLK_PROJECT_SHORT_NAME,
             BLK_LOCATIONS,
@@ -263,7 +259,7 @@ OPS_REQUESTS = dict(
     ),
 
     # Request permissions for User
-    req_resource_group = dict(
+    req_user_perms = dict(
         group = "Permission",
         title_popup = "User Perms",
         title_home = ":perms: Request Permissions for a User",
@@ -271,8 +267,7 @@ OPS_REQUESTS = dict(
         command = "user permissions",
         approval_needed = "false",
         enabled = "true",
-        blocks = [
-            BLK_SUBSCRIPTION,
+        blocks = BLK_SUBSCRIPTION + [
             BLK_EMAIL_ADDRESS,
             BLK_RESOURCE_GROUP,
             BLK_RESOURCE_LIST,
@@ -289,8 +284,7 @@ OPS_REQUESTS = dict(
         command = "keyvault restore",
         approval_needed = "false",
         enabled = "true",
-        blocks = [
-            BLK_SUBSCRIPTION,
+        blocks = BLK_SUBSCRIPTION + [
             BLK_LOCATIONS,
             BLK_KEY_VAULT
         ]
@@ -305,8 +299,7 @@ OPS_REQUESTS = dict(
         command = "keyvault purge",
         approval_needed = "false",
         enabled = "true",
-        blocks = [
-            BLK_SUBSCRIPTION,
+        blocks = BLK_SUBSCRIPTION + [
             BLK_LOCATIONS,
             BLK_KEY_VAULT
         ]

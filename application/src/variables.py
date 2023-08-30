@@ -7,22 +7,22 @@ from slack_sdk.models.blocks import *
 ###################################################################
 SLACK_BOT_TOKEN          = os.environ.get("SLACK_BOT_TOKEN")
 SLACK_SIGNING_SECRET     = os.environ.get("SLACK_SIGNING_SECRET")
-DEVOPS_TOKEN             = os.environ.get("DEVOPS_TOKEN")
+DEVOPS_TOKEN             = os.environ.get("DEVOPS_TOKEN", "")
 APP_VERSION              = str(os.environ.get("APP_VERSION")).replace("v","")
-OPSGENIE_API_KEY         = os.environ.get("OPSGENIE_API_KEY")
-OPSGENIE_SUBSCRIPTION_ID = os.environ.get("OPSGENIE_SUBSCRIPTION_ID")
-ORGANIZATION_ID          = os.environ.get("ORGANIZATION_ID")
-ORGANIZATION             = os.environ.get("ORGANIZATION")
-PROJECT                  = os.environ.get("PROJECT")
-OPS_CHANNEL              = os.environ.get("OPS_CHANNEL")
-OPS_PRIVATE_CHANNEL      = os.environ.get("OPS_PRIVATE_CHANNEL")
+OPSGENIE_API_KEY         = os.environ.get("OPSGENIE_API_KEY", "")
+OPSGENIE_SUBSCRIPTION_ID = os.environ.get("OPSGENIE_SUBSCRIPTION_ID", "")
+ORGANIZATION_ID          = os.environ.get("ORGANIZATION_ID", "")
+ORGANIZATION             = os.environ.get("ORGANIZATION", "")
+PROJECT                  = os.environ.get("PROJECT", "")
+OPS_CHANNEL              = os.environ.get("OPS_CHANNEL", "")
+OPS_PRIVATE_CHANNEL      = os.environ.get("OPS_PRIVATE_CHANNEL", "")
 PORT                     = os.environ.get("PORT", 3000)
 
 ###################################################################
 ### Default Values
 ###################################################################
 ENVIRONMENT              = "Development"
-HOME_PAGE_TITLE          = ":robot-face: Developer Operations"
+HOME_PAGE_TITLE          = ":robot-face: Operations"
 HOME_PAGE_DESCRIPTION    = """
 Welcome to the DevOps Portal
 From here, you can place requests for common tasks without having to create an individual Support Ticket.

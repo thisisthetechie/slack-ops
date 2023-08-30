@@ -1,6 +1,6 @@
 import json
 from variables import *
-from request_types import OPS_REQUESTS, BLK_PRODUCTION, BLK_SERVICE_CONNECTION
+from request_types import OPS_REQUESTS, BLK_PRODUCTION, BLK_AZURE_PROJECT_NAME
 from slack_bolt import App, Say
 from slack_sdk.models.views import View
 from slack_sdk.models.blocks import *
@@ -61,7 +61,7 @@ def update_popup(client, body, additional_blocks, add_blocks, callback_id = "vie
     body_blocks = body['view']['blocks']
     req_title  = OPS_REQUESTS[req_id]['title_popup']
 
-    additional_blocks = json.loads(additional_blocks)
+    #additional_blocks = json.loads(additional_blocks)
     block_exists = False
     for extra_block in additional_blocks:
         for block in body_blocks:
@@ -119,7 +119,7 @@ def update_modal(ack, body, client, logger):
     update_popup(
         client = client, 
         body = body,
-        additional_blocks = BLK_SERVICE_CONNECTION,
+        additional_blocks = BLK_AZURE_PROJECT_NAME,
         add_blocks = add_blocks
     )
     ack()
