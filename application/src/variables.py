@@ -8,7 +8,7 @@ from slack_sdk.models.blocks import *
 SLACK_BOT_TOKEN          = os.environ.get("SLACK_BOT_TOKEN")
 SLACK_SIGNING_SECRET     = os.environ.get("SLACK_SIGNING_SECRET")
 DEVOPS_TOKEN             = os.environ.get("DEVOPS_TOKEN", "")
-APP_VERSION              = str(os.environ.get("APP_VERSION")).replace("v","")
+APP_VERSION              = str(os.environ.get("APP_VERSION","0.0.1a")).replace("v","")
 OPSGENIE_API_KEY         = os.environ.get("OPSGENIE_API_KEY", "")
 OPSGENIE_SUBSCRIPTION_ID = os.environ.get("OPSGENIE_SUBSCRIPTION_ID", "")
 ORGANIZATION_ID          = os.environ.get("ORGANIZATION_ID", "")
