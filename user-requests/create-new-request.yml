@@ -14,6 +14,9 @@ parameters:
     type: string
     displayName: Type of Pipeline to Create
 
+variables:
+  - group: Default
+
 name: $(Date:yyyyMMdd)-${{ parameters.pipeline_name }}
 
 jobs:
@@ -21,8 +24,6 @@ jobs:
     displayName: Create ${{ parameters.pipeline_name }}
     pool:
       vmImage: ubuntu-latest
-    variables:
-      - group: Default
     steps:
       - checkout: self
         path: main
