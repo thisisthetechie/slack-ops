@@ -22,7 +22,7 @@ PORT                     = os.environ.get("PORT", 3000)
 ### Default Values
 ###################################################################
 ENVIRONMENT              = "Development"
-HOME_PAGE_TITLE          = ":robot-face: Operations"
+HOME_PAGE_TITLE          = ":robot_face: Operations"
 HOME_PAGE_DESCRIPTION    = """
 Welcome to the DevOps Portal
 From here, you can place requests for common tasks without having to create an individual Support Ticket.
