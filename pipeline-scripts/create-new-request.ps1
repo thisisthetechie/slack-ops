@@ -24,7 +24,7 @@ switch ($pipeline_type) {
 }
 
 Write-Host "Creating ${pipeline_name} Pipeline (Ignore any warnings about Queue ID)"
-$pipeline = az pipelines create --name $pipeline_name --folder-path $pipeline_type --yml-path "${path}/templates/${pipeline_file}" --branch main --organization "https://dev.azure.com/${env:ORGANIZATION}" --project $env:PROJECT --skip-first-run | ConvertFrom-Json -Depth 99 -AsHashtable
+$pipeline = az pipelines create --name $pipeline_name --folder-path $pipeline_type --yml-path "${path}/templates/${pipeline_file}" --branch main --organization "https://dev.azure.com/${env:ORGANIZATION}" --project $env:PROJECT --repository $env:REPOSITORY --skip-first-run | ConvertFrom-Json -Depth 99 -AsHashtable
 
 Write-Host "Pipeline ID: $($pipeline.id)"
 
