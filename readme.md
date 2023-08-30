@@ -1,4 +1,4 @@
-![logo](./application/src/icons/slack-ops-small.png)
+![logo](./application/icons/slack-ops-small.png)
 # Slack-Ops
 This is an interactive DevOps tool, intended to make it a lot easier for Developers and Operations to easily deploy and request things like new resources and access to existing resources while also maintaining standards like naming and locations.
 
