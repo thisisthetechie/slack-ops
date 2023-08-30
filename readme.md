@@ -17,4 +17,4 @@ This project features the following:
 - Slash Commands for quick access
 
 # Installation Instructions
-To follow
+[https://github.com/thisisthetechie/slack-ops/wiki](https://github.com/thisisthetechie/slack-ops/wiki)
