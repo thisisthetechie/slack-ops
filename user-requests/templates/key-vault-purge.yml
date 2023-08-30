@@ -1,0 +1,9 @@
+trigger: none
+
+stages:
+  - template: ../perform_request.yml
+    parameters:
+      tasks:
+        # Collection of processes to run in this order
+        - name: Purge Key Vault
+          script: key-vault-purge.ps1

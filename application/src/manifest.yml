@@ -1,0 +1,61 @@
+display_information:
+  name: Developer Operations
+  description: Developer Ops
+  background_color: "#005eb8"
+  long_description: "*Developer Ops*\r
+
+    Quick access to regular, standard Infrastructure requests such as:\r
+
+    * Azure DevOps Project Creation\r
+
+    * Azure Resource Group Creation\r
+
+    * Temporary Azure Resource Permission Requests\r
+
+    * Azure Key Vault Restore/Purge\r
+
+    * DNS Cache Flushes"
+features:
+  app_home:
+    home_tab_enabled: true
+    messages_tab_enabled: false
+    messages_tab_read_only_enabled: false
+  bot_user:
+    display_name: DevOps
+    always_online: true
+  slash_commands:
+    - command: /request
+      url: https://[domain]/slack/events
+      description: Submit an Ops Request.
+      usage_hint: "[Request Type]"
+      should_escape: false
+    - command: /oncall
+      url: https://[domain]/slack/events
+      description: Find out who is on call
+      usage_hint: "[25/12/2024]"
+      should_escape: false
+oauth_config:
+  redirect_urls:
+    - https://[domain]/slack/events
+  scopes:
+    bot:
+      - channels:read
+      - chat:write
+      - commands
+      - im:write
+      - incoming-webhook
+      - reactions:write
+      - users:read
+      - users:read.email
+      - users.profile:read
+settings:
+  event_subscriptions:
+    request_url: https://[domain]/slack/events
+    bot_events:
+      - app_home_opened
+  interactivity:
+    is_enabled: true
+    request_url: https://[domain]/slack/events
+  org_deploy_enabled: false
+  socket_mode_enabled: false
+  token_rotation_enabled: false

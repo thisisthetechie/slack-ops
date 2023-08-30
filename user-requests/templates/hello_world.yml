@@ -1,0 +1,13 @@
+trigger: none
+
+stages:
+  - template: ../perform_request.yml
+    parameters:
+      tasks:
+        # Collection of processes to run in this order
+        - name: Hello World
+          arguments: null
+          script: hello-world.ps1
+        - name: Hello World2
+          arguments: null
+          script: hello-world.ps1

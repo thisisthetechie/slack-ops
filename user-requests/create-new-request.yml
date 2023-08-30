@@ -1,0 +1,40 @@
+trigger: none
+
+parameters:  
+  - name: pipeline_name
+    type: string
+    displayName: Name of the Pipeline to create
+  - name: pipeline_file
+    type: string
+    displayName: Filename of the .yml Pipeline Definition
+  - name: pipeline_type
+    values:
+      - User Requests
+      - Scheduled Tasks
+    type: string
+    displayName: Type of Pipeline to Create
+
+name: $(Date:yyyyMMdd)-${{ parameters.pipeline_name }}
+
+jobs:
+  - job: publish_pipeline
+    displayName: Create ${{ parameters.pipeline_name }}
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      - checkout: self
+        path: main
+
+      - task: AzureCLI@2
+        displayName: Create Pipeline
+        inputs:
+          azureSubscription: $(service_connection)
+          scriptType: pscore
+          scriptLocation: 'scriptPath'
+          scriptPath: $(System.DefaultWorkingDirectory)/pipeline-scripts/create-new-request.ps1
+          arguments: -pipeline_name "${{ parameters.pipeline_name }}" -pipeline_file "${{ parameters.pipeline_file }}" -pipeline_type "${{ parameters.pipeline_type }}"
+          addSpnToEnvironment: true
+          useGlobalConfig: true
+        env:
+          AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
+          
