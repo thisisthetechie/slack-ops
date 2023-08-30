@@ -1,10 +1,11 @@
-import os, re, requests, json
+import json
 import logging
 from variables import *
 from validation import *
 from functions import *
 from approval import *
 from commands import *
+from request_types import OPS_REQUESTS, GROUPS
 from slack_sdk.models.views import View
 from slack_sdk.models.blocks import *
 
@@ -182,4 +183,4 @@ def view_submission(ack, body, logger):
 ### Start the app
 ###########################################################
 if __name__ == "__main__":
-    app.start(port=int(os.environ.get("PORT", 3000)))
+    app.start(port=int(PORT))

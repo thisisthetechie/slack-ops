@@ -1,10 +1,7 @@
-import os, re, requests, json
+import json
 from variables import *
-from slack_bolt import App, BoltResponse, Ack, Respond, Say, BoltContext
-from slack_bolt.workflows.step import Configure, Update, Complete, Fail
-from slack_sdk import WebClient
-from slack_sdk.web import SlackResponse
-from slack_bolt.adapter.socket_mode import SocketModeHandler
+from request_types import OPS_REQUESTS, BLK_PRODUCTION, BLK_SERVICE_CONNECTION
+from slack_bolt import App, Say
 from slack_sdk.models.views import View
 from slack_sdk.models.blocks import *
 
@@ -104,7 +101,7 @@ def update_modal(ack, body, client, logger):
     update_popup(
         client = client, 
         body = body,
-        additional_blocks = PRODUCTION_BLOCKS,
+        additional_blocks = BLK_PRODUCTION,
         add_blocks = is_prod
     )
     ack()
@@ -122,7 +119,7 @@ def update_modal(ack, body, client, logger):
     update_popup(
         client = client, 
         body = body,
-        additional_blocks = AZURE_PROJECT_BLOCKS,
+        additional_blocks = BLK_SERVICE_CONNECTION,
         add_blocks = add_blocks
     )
     ack()

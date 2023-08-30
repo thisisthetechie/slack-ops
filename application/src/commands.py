@@ -2,7 +2,19 @@ import re, requests, json
 import logging
 from variables import *
 from functions import *
+from request_types import GROUPS
 from datetime import date
+
+###################################################################
+### Slash Command Info
+###################################################################
+COMMAND_TITLE = "Make an Ops Request"  
+COMMAND_INFO  = "Make a request to the DevOps Service."  
+COMMAND_USAGE = """
+*Usage:* `/request [Request Type]`
+
+*Request Types:*
+"""
 
 ###########################################################
 ### Handle the /request Command
