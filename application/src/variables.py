@@ -1,6 +1,10 @@
 """Variables for SlackOps App."""
 import os, re
 from slack_sdk.models.blocks import *
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 ###################################################################
 ### Get Environment Variables

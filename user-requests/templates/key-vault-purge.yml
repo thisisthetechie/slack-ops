@@ -1,5 +1,10 @@
 trigger: none
 
+variables:
+  - group: Default
+  - name: operation
+    value: 'User Request'
+    
 stages:
   - template: ../perform_request.yml
     parameters:
