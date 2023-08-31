@@ -2,17 +2,6 @@
 from slack_sdk.models.blocks import *
 
 ###########################################################
-## Request Types
-###########################################################
-# ToDo: Get this from the actual collection values
-GROUPS = [
-    "Permission",
-    "Resource",
-    "Key Vault",
-    "Other",
-]
-
-###########################################################
 ## Block Types
 ###########################################################
 BLK_PROJECT_NAME = InputBlock(
@@ -182,10 +171,10 @@ OPS_REQUESTS = dict(
 
     # Hello World Test Request
     req_hello_world = dict(
-        group = "Resource",
+        group = "test",
         title_popup = "Hello World!",
         title_home = ":azdo: Hello World!",
-        devops_pipeline_id = 0,
+        devops_pipeline_id = 5,
         command = "hello",
         approval_needed = "false",
         enabled = "false",
@@ -306,4 +295,12 @@ OPS_REQUESTS = dict(
     )
 )
 
+###################################################################
+### Calculate Groups
+###################################################################
+groups = []
+for req_type in OPS_REQUESTS.keys():
+    groups.append(OPS_REQUESTS[req_type]["group"])
 
+# Create a unique set
+GROUPS = set(groups)

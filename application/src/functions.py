@@ -1,4 +1,4 @@
-import json
+import requests
 from variables import *
 from request_types import OPS_REQUESTS, BLK_PRODUCTION, BLK_AZURE_PROJECT_NAME
 from slack_bolt import App, Say
@@ -25,6 +25,20 @@ def message(text, thread = None, channel = None):
         mrkdwn = True,
         channel = channel
     )
+
+###########################################################
+## Simple function to submit an API request to the relevant Release Pipeline,
+## triggering a release to be created with the captured variables
+###########################################################
+def submit_request(request_object, request_type):    
+    headers = AZDO_HEADER
+    devops_pipeline_id = OPS_REQUESTS[request_type]["devops_pipeline_id"]
+    payload = dict(
+        variables = request_object
+    )
+    response = requests.post(PIPELINE_RUN_URL.format(ORGANIZATION, PROJECT, devops_pipeline_id), json = payload, headers = headers )
+    print(response.text)
+    return(response)
 
 ###########################################################
 ## Simple function to simplify the creation of the Request

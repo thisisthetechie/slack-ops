@@ -8,6 +8,11 @@ schedules:
       - main
   always: true
 
+variables:
+  - group: Default
+  - name: operation
+    value: 'Scheduled Task'
+    
 steps:
   - template: ../scheduled_tasks.yml
     parameters:

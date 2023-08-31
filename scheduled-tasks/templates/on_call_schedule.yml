@@ -9,7 +9,9 @@ schedules:
   always: true
 
 variables:
-  - group: Secrets
+  - group: Default
+  - name: operation
+    value: 'Scheduled Task'
 
 stages:
   - template: ../scheduled_tasks.yml

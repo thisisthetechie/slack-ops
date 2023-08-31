@@ -1,6 +1,10 @@
 """Variables for SlackOps App."""
 import os, re
 from slack_sdk.models.blocks import *
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 ###################################################################
 ### Get Environment Variables
@@ -8,7 +12,7 @@ from slack_sdk.models.blocks import *
 SLACK_BOT_TOKEN          = os.environ.get("SLACK_BOT_TOKEN")
 SLACK_SIGNING_SECRET     = os.environ.get("SLACK_SIGNING_SECRET")
 DEVOPS_TOKEN             = os.environ.get("DEVOPS_TOKEN", "")
-APP_VERSION              = str(os.environ.get("APP_VERSION")).replace("v","")
+APP_VERSION              = str(os.environ.get("APP_VERSION","0.0.1a")).replace("v","")
 OPSGENIE_API_KEY         = os.environ.get("OPSGENIE_API_KEY", "")
 OPSGENIE_SUBSCRIPTION_ID = os.environ.get("OPSGENIE_SUBSCRIPTION_ID", "")
 ORGANIZATION_ID          = os.environ.get("ORGANIZATION_ID", "")
@@ -22,7 +26,7 @@ PORT                     = os.environ.get("PORT", 3000)
 ### Default Values
 ###################################################################
 ENVIRONMENT              = "Development"
-HOME_PAGE_TITLE          = ":robot_face: Operations"
+HOME_PAGE_TITLE          = ":bot: Operations"
 HOME_PAGE_DESCRIPTION    = """
 Welcome to the DevOps Portal
 From here, you can place requests for common tasks without having to create an individual Support Ticket.

@@ -18,25 +18,25 @@ display_information:
 features:
   app_home:
     home_tab_enabled: true
-    messages_tab_enabled: false
+    messages_tab_enabled: true
     messages_tab_read_only_enabled: false
   bot_user:
     display_name: DevOps
     always_online: true
   slash_commands:
     - command: /request
-      url: https://[domain]/slack/events
+      url: https://example.com/slack/events
       description: Submit an Ops Request.
       usage_hint: "[Request Type]"
       should_escape: false
     - command: /oncall
-      url: https://[domain]/slack/events
+      url: https://example.com/slack/events
       description: Find out who is on call
       usage_hint: "[25/12/2024]"
       should_escape: false
 oauth_config:
   redirect_urls:
-    - https://[domain]/slack/events
+    - https://example.com/slack/events
   scopes:
     bot:
       - channels:read
@@ -50,12 +50,12 @@ oauth_config:
       - users.profile:read
 settings:
   event_subscriptions:
-    request_url: https://[domain]/slack/events
+    request_url: https://example.com/slack/events
     bot_events:
       - app_home_opened
   interactivity:
     is_enabled: true
-    request_url: https://[domain]/slack/events
+    request_url: https://example.com/slack/events
   org_deploy_enabled: false
   socket_mode_enabled: false
   token_rotation_enabled: false
