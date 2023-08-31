@@ -5,13 +5,6 @@ parameters:
 stages:
   - stage: perform_request
     displayName: Perform Request
-    variables:
-      - group: Default
-      - group: Secrets
-      - group: subscriptions
-      - group: locations
-      - name: operation
-        value: 'User Request'
     jobs:
       - job: initial_communications
         displayName: Initial Communications
@@ -73,12 +66,13 @@ stages:
         dependsOn:
           - approval
           - initial_communications
-        condition: in(dependencies.approval.result, 'Succeeded', 'Skipped')
+        condition: and(eq(dependencies.initial_communications.result, 'Succeeded'), in(dependencies.approval.result, 'Succeeded', 'Skipped'))
         variables:
           - name: user_dm
             value: $[ dependencies.initial_communications.outputs['notify_receipt.user_dm'] ] 
           - name: user_thread
             value: $[ dependencies.initial_communications.outputs['notify_receipt.user_thread'] ]
+          - group: Default
 
         steps:
 
@@ -109,7 +103,7 @@ stages:
               inputs:
                 azureSubscription: $(service_connection)
                 ScriptPath: $(System.DefaultWorkingDirectory)/user-requests/scripts/${{ task.script }}
-                ScriptArguments: -output "$(output)" ${{ task.arguments}}
+                ScriptArguments: -output "$(output)" ${{ task.arguments }}
                 azurePowerShellVersion: LatestVersion
                 addSpnToEnvironment: true
                 pwsh: true
